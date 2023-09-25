@@ -36,11 +36,28 @@ def index():
     return "hello world"
 
 # Définir l'endpoint pour les prédictions
-@app.route('/predict', methods=['GET'])
-def predict():
+@app.route('/predict/<id_client>', methods=['GET'])
+def predict(id_client):
+    #print(str(id_client))
+    client= df.loc[df.SK_ID_CURR==int(id_client)]
+    #print(client)
     try:
         # Effectuer des prédictions en utilisant le modèle pickle sur le DataFrame df
-        predictions = loaded_model_pickle.predict(df)
+        predictions = loaded_model_pickle.predict(client)
+
+        # Renvoyer les prédictions au format JSON
+        return jsonify(predictions.tolist())
+    except Exception as e:
+        return str(e)
+
+@app.route('/predict_proba/<id_client>', methods=['GET'])
+def predict_proba(id_client):
+    #print(str(id_client))
+    client= df.loc[df.SK_ID_CURR==int(id_client)]
+    #print(client)
+    try:
+        # Effectuer des prédictions en utilisant le modèle pickle sur le DataFrame df
+        predictions = loaded_model_pickle.predict_proba(client)
 
         # Renvoyer les prédictions au format JSON
         return jsonify(predictions.tolist())
@@ -48,18 +65,20 @@ def predict():
         return str(e)
 
 # Endpoint pour récupérer les informations sur les clients acceptés, refusés et à évaluer
-@app.route('/client_info', methods=['GET'])
-def get_client_info():
+@app.route('/client_info/<id_client>', methods=['GET'])
+def get_client_info(id_client):
+    client = df.loc[df.SK_ID_CURR == int(id_client)]
     try:
-        # Vous pouvez maintenant utiliser les tableaux numpy chargés pour fournir ces informations
-        return jsonify({
-            'clients_acceptes': loaded_npy_files['clients_acceptes'].tolist(),
-            'clients_refuses': loaded_npy_files['clients_refuses'].tolist(),
-            'clients_a_evaluer': loaded_npy_files['clients_a_evaluer'].tolist()
-        })
+        if client.empty:
+            return jsonify({'error': 'Client not found'}), 404
+
+        # Convertir le DataFrame du client en un dictionnaire
+        client_info = client.to_dict(orient='records')
+
+        return jsonify(client_info)
+
     except Exception as e:
         return str(e)
-
 
 
 if __name__ == '__main__':
