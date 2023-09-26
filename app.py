@@ -65,7 +65,7 @@ def predict_proba(id_client):
         return str(e)
 
 # Endpoint pour récupérer les informations sur les clients acceptés, refusés et à évaluer
-@app.route('/client_info/<id_client>', methods=['GET'])
+@app.route('/g/<id_client>', methods=['GET'])
 def get_client_info(id_client):
     client = df.loc[df.SK_ID_CURR == int(id_client)]
     try:
