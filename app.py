@@ -31,7 +31,7 @@ for npy_file in os.listdir(npy_files_dir):
 df = pd.read_csv(csv_file)
 
 
-# Limiter le nombre de lignes globalement à 10 pour toutes les réponses JSON
+# Limiter le nombre de lignes 
 @app.before_request
 def limit_response_rows():
     max_rows = 1000
