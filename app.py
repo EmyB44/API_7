@@ -50,7 +50,7 @@ def index():
     return "hello world"
 
 # Définir l'endpoint pour les prédictions
-@app.route('/predict/<id_client>', methods=['GET'])
+@app.route('/predict/<id_client>', methods=['POST'])
 def predict(id_client):
     #print(str(id_client))
     client= df.loc[df.SK_ID_CURR==int(id_client)]
@@ -64,7 +64,7 @@ def predict(id_client):
     except Exception as e:
         return str(e)
 
-@app.route('/predict_proba/<id_client>', methods=['GET'])
+@app.route('/predict_proba/<id_client>', methods=['POST'])
 def predict_proba(id_client):
     #print(str(id_client))
     client= df.loc[df.SK_ID_CURR==int(id_client)]
@@ -79,7 +79,7 @@ def predict_proba(id_client):
         return str(e)
 
 # Endpoint pour récupérer les informations sur les clients acceptés, refusés et à évaluer
-@app.route('/client_info/<id_client>', methods=['GET'])
+@app.route('/client_info/<id_client>', methods=['POST'])
 def client_info(id_client):
     client = df.loc[df.SK_ID_CURR == int(id_client)]
     try:
