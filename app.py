@@ -37,3 +37,53 @@ df = pd.read_csv(csv_file)
 def index():
     return "hello world"
 
+
+# Définir l'endpoint pour les prédictions
+@app.route('/predict/<id_client>', methods=['GET'])
+def predict(id_client):
+    #print(str(id_client))
+    client= df.loc[df.SK_ID_CURR==int(id_client)]
+    #print(client)
+    try:
+        # Effectuer des prédictions en utilisant le modèle pickle sur le DataFrame df
+        predictions = loaded_model_pickle.predict(client)
+
+        # Renvoyer les prédictions au format JSON
+        return jsonify(predictions.tolist())
+    except Exception as e:
+        return str(e)
+
+@app.route('/predict_proba/<id_client>', methods=['GET'])
+def predict_proba(id_client):
+    #print(str(id_client))
+    client= df.loc[df.SK_ID_CURR==int(id_client)]
+    #print(client)
+    try:
+        # Effectuer des prédictions en utilisant le modèle pickle sur le DataFrame df
+        predictions = loaded_model_pickle.predict_proba(client)
+
+        # Renvoyer les prédictions au format JSON
+        return jsonify(predictions.tolist())
+    except Exception as e:
+        return str(e)
+
+# Endpoint pour récupérer les informations sur les clients acceptés, refusés et à évaluer
+@app.route('/client_info/<id_client>', methods=['GET'])
+def client_info(id_client):
+    client = df.loc[df.SK_ID_CURR == int(id_client)]
+    try:
+        if client.empty:
+            return jsonify({'error': 'Client not found'}), 404
+
+        # Convertir le DataFrame du client en un dictionnaire
+        client_info = client.to_dict(orient='records')
+
+        return jsonify(client_info)
+
+    except Exception as e:
+        return str(e)
+
+
+#if __name__ == '__main__':
+ #   app.run(host='0.0.0.0', port=5000)
+
