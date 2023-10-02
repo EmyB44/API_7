@@ -10,10 +10,10 @@ app = Flask(__name__)
 pickle_model_path = './predict_model_API.pkl'
 
 # Chemin absolu vers le dossier contenant les fichiers numpy
-npy_files_dir = 'C:/Users/emili/PycharmProjects/flaskProject/prediction_predict_model_API/'  # Utilisez le chemin correct
+npy_files_dir = './prediction_predict_model_API/'  # Utilisez le chemin correct
 
 # Emplacement du fichier CSV
-csv_file = 'C:/Users/emili/PycharmProjects/flaskProject/data/X_train.csv'
+csv_file = './X_train.csv'
 
 # Charger le modèle à partir du fichier pickle
 with open(pickle_model_path, 'rb') as file:
