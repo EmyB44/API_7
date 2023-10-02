@@ -7,7 +7,7 @@ import numpy as np
 app = Flask(__name__)
 
 # Chemin du modèle pickle
-pickle_model_path = 'C:/Users/emili/PycharmProjects/flaskProject/predict_model_API.pkl'
+pickle_model_path = './predict_model_API.pkl'
 
 # Chemin absolu vers le dossier contenant les fichiers numpy
 npy_files_dir = 'C:/Users/emili/PycharmProjects/flaskProject/prediction_predict_model_API/'  # Utilisez le chemin correct
