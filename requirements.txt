@@ -3,3 +3,14 @@ numpy==1.23.2
 pandas==2.1.1
 imbalanced-learn
 XGBoost
+matplotlib
+seaborn
+plotly
+scikit-learn
+xgboost
+jupyter
+notebook
+ipython
+black
+pytest
+
