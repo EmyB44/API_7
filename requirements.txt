@@ -8,8 +8,8 @@ seaborn
 plotly
 scikit-learn
 xgboost
-jupyter
-notebook
+
+
 ipython
 black
 pytest
