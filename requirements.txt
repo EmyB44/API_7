@@ -8,9 +8,9 @@ seaborn
 plotly
 scikit-learn==1.2.2
 xgboost
+#gunicorn
 
-
-ipython
+#ipython
 black
 pytest
 
