@@ -127,10 +127,14 @@ def calculate_shap_values(client_id, loaded_model_pickle, df, top_n=10):
     shap_values = explainer.shap_values(X_client)
 
     # Sélectionnez les N fonctionnalités les plus importantes
+    top_n = 20
     top_n_features_idx = shap_values[0].argsort()[-top_n:][::-1]
     top_n_feature_names = X_client.columns[top_n_features_idx]
     top_n_shap_values = shap_values[0][top_n_features_idx]
 
+    #top_features_idx = shap_instance.argsort()[-top_n:][::-1]
+    #top_feature_names = feature_names[top_features_idx]
+    #top_shap_values = shap_instance[top_features_idx]
     return {'top_features': list(top_n_feature_names), 'shap_values': list(top_n_shap_values)}
 
 # Créer une route pour obtenir les valeurs SHAP d'un client donné
