@@ -11,7 +11,7 @@ app = Flask(__name__)
 pickle_model_path = './predict_model_API.pkl'
 
 # Chemin absolu vers le dossier contenant les fichiers numpy
-npy_files_dir = './prediction_predict_model_API/'  # Utilisez le chemin correct
+npy_files_dir = './prediction_predict_model_API/'
 
 # Emplacement du fichier CSV
 csv_file = './X_train.csv'
@@ -104,52 +104,18 @@ def all_client_info():
         return str(e)
 
 
+# Créez un explainer SHAP pour le modèle XGBoost
+explainer = shap.Explainer(loaded_model_pickle)
 
-# Définir la fonction de calcul des valeurs SHAP
-def calculate_shap_values(client_id, loaded_model_pickle, df, top_n=10):
-    # Sélectionnez le client en fonction de l'ID
-    client_data = df.loc[df['client_id'] == client_id]
+@app.route('/feature_importance', methods=['GET'])
+def feature_importance():
+    # Calculez les SHAP values pour un échantillon de données
+    shap_values = explainer.shap_values(df)
 
-    # Assurez-vous que le client existe
-    if client_data.empty:
-        return {'error': 'Client not found'}
+    # Calculez l'importance des fonctionnalités en prenant la moyenne des SHAP values
+    feature_importance = {feature: shap_value.mean() for feature, shap_value in zip(df.columns, shap_values)}
 
-    # Sélectionnez les fonctionnalités pertinentes pour l'explication SHAP
-    X_client = client_data.drop(['client_id'], axis=1)
-
-    # Utilisez le modèle  pour effectuer une prédiction
-    prediction = loaded_model_pickle.predict(X_client)
-
-    # Créez un explainer SHAP basé sur le modèle
-    explainer = shap.Explainer(model)
-
-    # Calculez les valeurs SHAP pour l'instance du client
-    shap_values = explainer.shap_values(X_client)
-
-    # Sélectionnez les N fonctionnalités les plus importantes
-    top_n = 20
-    top_n_features_idx = shap_values[0].argsort()[-top_n:][::-1]
-    top_n_feature_names = X_client.columns[top_n_features_idx]
-    top_n_shap_values = shap_values[0][top_n_features_idx]
-
-    #top_features_idx = shap_instance.argsort()[-top_n:][::-1]
-    #top_feature_names = feature_names[top_features_idx]
-    #top_shap_values = shap_instance[top_features_idx]
-    return {'top_features': list(top_n_feature_names), 'shap_values': list(top_n_shap_values)}
-
-# Créer une route pour obtenir les valeurs SHAP d'un client donné
-@app.route('/shap_values/<int:client_id>', methods=['GET'])
-def get_shap_values(client_id):
-    try:
-        # Calculer les valeurs SHAP pour le client
-        shap_values = calculate_shap_values(client_id, loaded_model_pickle, df)
-
-        # Renvoyer les valeurs SHAP sous forme de JSON
-        return jsonify(shap_values)
-
-    except Exception as e:
-        return str(e)
-
+    return jsonify(feature_importance)
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=80)
