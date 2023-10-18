@@ -103,19 +103,17 @@ def all_client_info():
     except Exception as e:
         return str(e)
 
+@app.route('/describe', methods=['GET'])
+def describe_dataframe():
+    # Obtenez le résumé statistique avec la méthode describe()
+    describe_df = df.T.describe()
 
-# Créez un explainer SHAP pour le modèle XGBoost
-explainer = shap.Explainer(loaded_model_pickle)
+    # Convertissez le DataFrame en un dictionnaire
+    describe_dict = describe_df.to_dict()
 
-@app.route('/feature_importance', methods=['GET'])
-def feature_importance():
-    # Calculez les SHAP values pour un échantillon de données
-    shap_values = explainer.shap_values(df)
+    return jsonify(describe_dict)
 
-    # Calculez l'importance des fonctionnalités en prenant la moyenne des SHAP values
-    feature_importance = {feature: shap_value.mean() for feature, shap_value in zip(df.columns, shap_values)}
 
-    return jsonify(feature_importance)
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=80)
