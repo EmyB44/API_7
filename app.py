@@ -203,7 +203,7 @@ def prediction_feature_importance(id_client):
         predictions = loaded_model_pickle.predict(client_data)
 
         # Calculez les valeurs SHAP pour ces données (basées sur les prédictions)
-        shap_values = calculate_feature_importance(predictions, client_data)
+        shap_values = calculate_feature_importance(predictions, df)
 
         # Convertissez les valeurs float32 en float64
         shap_values = {key: convert_float32_to_float64(value) for key, value in shap_values.items()}
