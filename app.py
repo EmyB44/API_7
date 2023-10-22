@@ -190,6 +190,38 @@ def important_features(id_client):
     except Exception as e:
         return str(e)
 
+@app.route('/prediction_feature_importance/<int:id_client>', methods=['GET'])
+def prediction_feature_importance(id_client):
+    try:
+        # Sélectionnez les données du client actuel
+        client_data = df[df['SK_ID_CURR'] == id_client]
+
+        if client_data.empty:
+            return jsonify({'error': 'Client data not found'}), 404
+
+        # Utilisez votre modèle pour effectuer une prédiction sur ces données
+        predictions = loaded_model_pickle.predict(client_data)
+
+        # Calculez les valeurs SHAP pour ces données (basées sur les prédictions)
+        shap_values = calculate_feature_importance(predictions, client_data)
+
+        # Convertissez les valeurs float32 en float64
+        shap_values = {key: convert_float32_to_float64(value) for key, value in shap_values.items()}
+
+        # Obtenez les fonctionnalités les plus importantes pour la prédiction
+        important_features = {feature: shap_value for feature, shap_value in shap_values.items()}
+
+        # Triez les fonctionnalités par importance (SHAP value)
+        sorted_important_features = dict(sorted(important_features.items(), key=lambda item: item[1], reverse=True))
+
+        # Sélectionnez les 10 premières fonctionnalités
+        num_features_to_show = 10
+        top_n_features = list(sorted_important_features.items())[:num_features_to_show]
+
+        return jsonify(top_n_features)
+
+    except Exception as e:
+        return str(e)
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=80)
