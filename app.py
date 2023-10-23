@@ -203,7 +203,7 @@ def prediction_feature_importance(id_client):
         predictions = loaded_model_pickle.predict(client_data)
 
         # Calculez les valeurs SHAP pour ces données (basées sur les prédictions)
-        shap_values = calculate_feature_importance(predictions, df)
+        shap_values = calculate_feature_importance(predictions, client_data)
 
         # Convertissez les valeurs float32 en float64
         shap_values = {key: convert_float32_to_float64(value) for key, value in shap_values.items()}
@@ -211,14 +211,15 @@ def prediction_feature_importance(id_client):
         # Obtenez les fonctionnalités les plus importantes pour la prédiction
         important_features = {feature: shap_value for feature, shap_value in shap_values.items()}
 
+        return jsonify(important_features)
         # Triez les fonctionnalités par importance (SHAP value)
-        sorted_important_features = dict(sorted(important_features.items(), key=lambda item: item[1], reverse=True))
+        #sorted_important_features = dict(sorted(important_features.items(), key=lambda item: item[1], reverse=True))
 
         # Sélectionnez les 10 premières fonctionnalités
-        num_features_to_show = 10
-        top_n_features = list(sorted_important_features.items())[:num_features_to_show]
+        #num_features_to_show = 10
+        #top_n_features = list(sorted_important_features.items())[:num_features_to_show]
 
-        return jsonify(top_n_features)
+        #return jsonify(top_n_features)
 
     except Exception as e:
         return str(e)
