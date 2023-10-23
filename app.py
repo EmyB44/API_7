@@ -113,10 +113,7 @@ def describe_dataframe():
 
     return jsonify(describe_dict)
 
-def convert_float32_to_float64(obj):
-    if isinstance(obj, np.float32):
-        return float(obj)
-    return obj
+
 
 model = loaded_model_pickle.named_steps['model']
 
