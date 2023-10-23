@@ -4,6 +4,7 @@ from flask import Flask, request, jsonify
 import pandas as pd
 import numpy as np
 import shap
+from operator import itemgetter
 
 app = Flask(__name__)
 
@@ -64,6 +65,7 @@ def get_client_info(id_client):
 def predict(id_client):
     #print(str(id_client))
     client= df.loc[df.SK_ID_CURR==int(id_client)]
+
     #print(client)
     try:
         # Effectuer des prédictions en utilisant le modèle pickle sur le DataFrame df
@@ -131,7 +133,6 @@ def calculate_feature_importance(model, df):
     print (feature_importance)
     return feature_importance
 
-from operator import itemgetter
 
 @app.route('/prediction_feature_importance/<int:id_client>', methods=['GET'])
 def prediction_feature_importance(id_client):
