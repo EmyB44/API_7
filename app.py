@@ -126,69 +126,15 @@ tree_explainer = shap.TreeExplainer(model)
 # Dans votre route API
 def calculate_feature_importance(model, df):
     # Calculez les SHAP values pour les données données en utilisant l'explainer Tree (XGBoost)
-    shap_values = tree_explainer.shap_values(df)
+    shap_values = tree_explainer.shap_values(df)[0]
+    print (shap_values)
 
     # Calculez l'importance des fonctionnalités en prenant la moyenne des SHAP values
-    feature_importance = {feature: shap_value.mean(axis=0) for feature, shap_value in zip(df.columns, shap_values)}
-
+    feature_importance = {feature: shap_value for feature, shap_value in zip(df.columns, shap_values)}
+    print (feature_importance)
     return feature_importance
 
 from operator import itemgetter
-@app.route('/feature_importance/<int:id_client>', methods=['GET'])
-def feature_importance(id_client):
-    try:
-        # Sélectionnez les données du client actuel
-        client_data = df[df['SK_ID_CURR'] == id_client]
-
-        if client_data.empty:
-            return jsonify({'error': 'Client data not found'}), 404
-
-        # Calculez l'importance des fonctionnalités pour le client actuel en utilisant la fonction définie ci-dessus
-        feature_importance = calculate_feature_importance(model, client_data)
-
-        # Convertir les valeurs float32 en float64
-        feature_importance = {key: convert_float32_to_float64(value) for key, value in feature_importance.items()}
-
-        # Trier les fonctionnalités par importance
-        sorted_feature_importance = dict(sorted(feature_importance.items(), key=lambda item: item[1], reverse=False))
-
-        # Sélectionner les 10 premières fonctionnalités
-        top_10_features = dict(list(sorted_feature_importance.items())[:10])
-
-        return jsonify(top_10_features)
-
-    except Exception as e:
-        return str(e)
-
-@app.route('/important_features/<int:id_client>', methods=['GET'])
-def important_features(id_client):
-    try:
-        # Sélectionnez les données du client actuel
-        client_data = df[df['SK_ID_CURR'] == id_client]
-
-        if client_data.empty:
-            return jsonify({'error': 'Client data not found'}), 404
-
-        # Calculez les valeurs SHAP pour le client actuel
-        shap_values = calculate_feature_importance(model, client_data)
-
-        # Convertissez les valeurs float32 en float64
-        shap_values = {key: convert_float32_to_float64(value) for key, value in shap_values.items()}
-
-        # Obtenez les fonctionnalités les plus importantes
-        important_features = {feature: shap_value for feature, shap_value in shap_values.items()}
-
-        # Triez les fonctionnalités par importance (SHAP value)
-        sorted_important_features = dict(sorted(important_features.items(), key=lambda item: item[1], reverse=True))
-
-        # Sélectionnez les 10 premières fonctionnalités
-        num_features_to_show = 10
-        top_n_features = list(sorted_important_features.items())[:num_features_to_show]
-
-        return jsonify(top_n_features)
-
-    except Exception as e:
-        return str(e)
 
 @app.route('/prediction_feature_importance/<int:id_client>', methods=['GET'])
 def prediction_feature_importance(id_client):
@@ -204,22 +150,8 @@ def prediction_feature_importance(id_client):
 
         # Calculez les valeurs SHAP pour ces données (basées sur les prédictions)
         shap_values = calculate_feature_importance(predictions, client_data)
-
-        # Convertissez les valeurs float32 en float64
-        shap_values = {key: convert_float32_to_float64(value) for key, value in shap_values.items()}
-
-        # Obtenez les fonctionnalités les plus importantes pour la prédiction
-        important_features = {feature: shap_value for feature, shap_value in shap_values.items()}
-
-        return jsonify(important_features)
-        # Triez les fonctionnalités par importance (SHAP value)
-        #sorted_important_features = dict(sorted(important_features.items(), key=lambda item: item[1], reverse=True))
-
-        # Sélectionnez les 10 premières fonctionnalités
-        #num_features_to_show = 10
-        #top_n_features = list(sorted_important_features.items())[:num_features_to_show]
-
-        #return jsonify(top_n_features)
+        shap_values = {k: float(v) for k, v in shap_values.items()}
+        return jsonify(shap_values)
 
     except Exception as e:
         return str(e)
