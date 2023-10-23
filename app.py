@@ -150,7 +150,7 @@ def feature_importance(id_client):
         feature_importance = {key: convert_float32_to_float64(value) for key, value in feature_importance.items()}
 
         # Trier les fonctionnalités par importance
-        sorted_feature_importance = dict(sorted(feature_importance.items(), key=lambda item: item[1], reverse=True))
+        sorted_feature_importance = dict(sorted(feature_importance.items(), key=lambda item: item[1], reverse=False))
 
         # Sélectionner les 10 premières fonctionnalités
         top_10_features = dict(list(sorted_feature_importance.items())[:10])
